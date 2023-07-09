@@ -6,7 +6,7 @@ router.use(express.json());
 router.use(express.urlencoded({ extended: true }));
 
 // Read
-router.get("/posts", async (req, res) => {
+router.get("/viewall", async (req, res) => {
   try {
     let data = await postData.find();
     res.json(data);
@@ -15,13 +15,13 @@ router.get("/posts", async (req, res) => {
   }
 });
 
-router.post("/posts", async (req, res) => {
+router.post("/addposts", async (req, res) => {
   try {
     console.log(req.body);
     let item = req.body;
     const newPost = postData(item);
     const saveData = await newPost.save();
-    res.json(saveData);
+    res.json({ message: "Posted successfully" });
   } catch (error) {
     res.json("Unable to post");
   }
@@ -33,7 +33,7 @@ router.delete("/posts/:id", async (req, res) => {
     console.log(postId);
     const deletedPost = await postData.findByIdAndDelete(postId);
     console.log("Deleted");
-    res.json(deletedPost);
+    res.json({ message: "Post deleted successfully" });
   } catch (error) {
     res.status(400).json("Unable to delete");
   }

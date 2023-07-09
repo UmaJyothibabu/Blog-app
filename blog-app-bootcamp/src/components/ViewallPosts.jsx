@@ -4,23 +4,31 @@ import axios from "axios";
 
 const ViewallPosts = () => {
   const [data, setData] = useState([]);
+  const [deletion, setDeletion] = useState(false);
 
   const fetchDataFromApi = () => {
-    axios
-      .get(
-        "https://newsapi.org/v2/top-headlines?country=in&apiKey=9b6ac262eea44bcbbf80ae1b064f631d"
-      )
-      .then((response) => {
-        console.log(response.data.articles);
+    axios.get("http://localhost:8000/api/viewall").then((response) => {
+      console.log(response.data);
 
-        setData(response.data.articles);
-      });
+      setData(response.data);
+    });
   };
 
   useEffect(() => {
     fetchDataFromApi();
-  }, []);
+  }, [deletion]);
 
+  const deleteHandler = (id) => {
+    setDeletion(false);
+    axios.delete(`http://localhost:8000/api/posts/${id}`).then((response) => {
+      if (response.data.message === "Post deleted successfully") {
+        alert(response.data.message);
+        setDeletion(true);
+      } else {
+        alert(response.data.message);
+      }
+    });
+  };
   return (
     <div>
       <Header />
@@ -36,7 +44,7 @@ const ViewallPosts = () => {
                       <div class="row g-0">
                         <div class="col-md-4">
                           <img
-                            src={value.urlToImage}
+                            src={value.img_url}
                             class="img-fluid rounded-start"
                             alt="..."
                           />
@@ -47,9 +55,19 @@ const ViewallPosts = () => {
                             <p class="card-text"> {value.content} </p>
                             <p class="card-text">
                               <small class="text-body-secondary">
-                                Last updated : {value.publishedAt}{" "}
+                                Last updated : {value.createdAt}
                               </small>
                             </p>
+                            <button className="btn btn-success">Update</button>
+                            &nbsp;
+                            <button
+                              className="btn btn-danger"
+                              onClick={() => {
+                                deleteHandler(value._id);
+                              }}
+                            >
+                              Delete
+                            </button>
                           </div>
                         </div>
                       </div>
