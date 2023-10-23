@@ -1,6 +1,12 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 
 const Header = () => {
+  const navigate = useNavigate();
+  const logoutHandler = () => {
+    sessionStorage.clear();
+    navigate("/");
+  };
   return (
     <div>
       <nav class="navbar navbar-expand-lg bg-primary navbar-dark">
@@ -31,8 +37,8 @@ const Header = () => {
               <a class="nav-link" active href="/">
                 Login
               </a>
-              <a class="nav-link" active href="/register">
-                Sign Up
+              <a class="nav-link" active onClick={logoutHandler} href="/">
+                Log out
               </a>
             </div>
           </div>

@@ -3,9 +3,14 @@ import Header from "./Header";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
-const Addpost = () => {
+const Addpost = (props) => {
   const navigate = useNavigate();
-  const [post, setPost] = useState({ title: "", content: "", img_url: "" });
+  const [post, setPost] = useState(props.data);
+  const [userToken, setUserToken] = useState(
+    sessionStorage.getItem("userToken")
+  );
+  const [userId, setUserId] = useState(sessionStorage.getItem("userId"));
+
   const inputHandler = (e) => {
     const { name, value } = e.target;
     setPost({
@@ -15,25 +20,48 @@ const Addpost = () => {
   };
 
   const addPost = () => {
+    let data = {
+      userId: userId,
+      token: userToken,
+      title: post.title,
+      content: post.content,
+      img_url: post.img_url,
+    };
     console.log("Add clicked");
-    axios
-      .post("http://localhost:8000/api/addposts", post)
-      .then((response) => {
-        if (response.data.message === "Posted successfully") {
-          alert(response.data.message);
-          navigate("/viewallposts");
-        } else {
-          alert(response.data.message);
-        }
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+    if (props.method === "post") {
+      axios
+        .post("http://localhost:8000/api/addposts", data)
+        .then((response) => {
+          if (response.data.message === "Posted successfully") {
+            alert(response.data.message);
+            navigate("/viewallposts");
+          } else {
+            alert(response.data.message);
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    }
+    if (props.method === "put") {
+      axios
+        .put(`http://localhost:8000/api/edit/${post._id}`, data)
+        .then((response) => {
+          if (response.data.message === "Updated successfully") {
+            alert(response.data.message);
+
+            window.location.reload(false);
+          } else {
+            alert(response.data.message);
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    }
   };
   return (
     <div>
-      <Header />
-
       <div className="container">
         <div className="row">
           <div className="col col-12 col-sm-6 col-md-6">
@@ -77,8 +105,7 @@ const Addpost = () => {
               </div>
               <div className="col col-12 col-sm-12 col-md-12">
                 <button className="btn btn-success" onClick={addPost}>
-                  {" "}
-                  Add POST
+                  Submit
                 </button>
               </div>
             </div>

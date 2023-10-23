@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const userData = require("../Model/user");
+const jwt = require("jsonwebtoken");
 
 router.use(express.json());
 router.use(express.urlencoded({ extended: true }));
@@ -19,7 +20,24 @@ router.post("/login", async (req, res) => {
   try {
     let userinfo = data.find((value) => value.password === password);
     if (userinfo) {
-      res.json({ message: "Login successfully" });
+      jwt.sign(
+        { email: username, id: userinfo._id },
+        "ict",
+        {
+          expiresIn: "1d",
+        },
+        (err, token) => {
+          if (err) {
+            res.json({ message: "Token not generated" });
+          } else {
+            res.json({
+              message: "Login successfully",
+              token: token,
+              data: userinfo,
+            });
+          }
+        }
+      );
     } else {
       res.json({ message: "Login failed" });
     }

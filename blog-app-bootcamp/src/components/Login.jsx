@@ -14,8 +14,16 @@ const Login = () => {
       .post("http://localhost:8000/api/login", user)
       .then((response) => {
         if (response.data.message === "Login successfully") {
+          const token = response.data.token;
+          const userid = response.data.data._id;
+          console.log(token);
+          console.log(userid);
+          sessionStorage.setItem("userToken", token);
+          sessionStorage.setItem("userId", userid);
           alert(response.data.message);
           navigate("/viewallposts");
+        } else {
+          alert(response.data.message);
         }
       })
       .catch((err) => {});
